@@ -1,0 +1,1 @@
+![ScreenShot](https://github.com/DrGkill/Astro-Mount-Control/blob/master/A4988_Arduino_nema14.png)
