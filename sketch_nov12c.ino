@@ -1,10 +1,8 @@
 #include <TimerOne.h>
 
-// 20 bits après le virgule, à dimenssionner suivant la vitesse
-// Plus la vitesse est faible, plus STEP_SHIFT doit être petit
-// Et inversement.
-// Ex: pour une freq de 10kHz, 24 est une bonne valeur,
-// Pour une freq de 1.7 kHz, 20 semble bon
+// 20 bits after the floating point, has to be ajusted regarding the speed
+// Eg: For a freq of 10kHz, 24 is a good value,
+// For a freq of 1.7 kHz, 20 seams accurate
 
 #define motEnable 6
 #define motStep 5
@@ -88,22 +86,24 @@ void sideralSpeed(void)
   lastStepErr = StepCurr & (((uint32_t)~0)>>(32 - STEP_SHIFT) ); // On prend juste le poid faible
 }
 
-// Begin @ 600tr/min
-int StepFast = 500;
   //0 = Clockwise , 1 = Anti-clockwise
 void fastSpeed(void)
 {
   digitalWrite(motStep,HIGH); // Impulse start   
   digitalWrite(motStep,LOW); // Impulse stop.
   
+  // Set the initial speed @600 RPM
+  if (StepCurr > 500) {
+    StepCurr = 500;
+  }
   // Speed = number_of_step / time_between_steps so function like 1/x
   // to increase speed linearly: multiply by (constant x time_between_steps²)
   
-  // Linear acceleration to 2340 tr/min
-  if (StepFast > 129) {
-    //10.000.000 give a nominal speed in 0.13s
-    StepFast -= 1/10000000*pow(StepFast,2);
-    Timer1.setPeriod(StepFast);
+  // Linear acceleration to 2340 RPM
+  if (StepCurr > 129) {
+    //10.000.000 give an acceleration to cruise speed in 0.13s
+    StepCurr -= 1/10000000*pow(StepCurr,2);
+    Timer1.setPeriod(StepCurr);
   }
 }
 
